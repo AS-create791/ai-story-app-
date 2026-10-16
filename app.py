@@ -1,10 +1,10 @@
 import streamlit as st
 import io
 import requests
-import asyncio
+import subprocess
+import tempfile
 from PIL import Image, ImageFilter
 from moviepy.editor import ImageClip, AudioFileClip
-import edge_tts
 
 st.set_page_config(page_title="AI Story Video Engine", page_icon="🎬", layout="centered")
 
@@ -33,24 +33,6 @@ prompt_input = st.text_area("৪. ছবির বিবরণ (English Visual P
 
 is_sensitive = st.checkbox("⚠️ ১৮+ / সেনসিটিভ কন্টেন্ট (Auto Privacy Blur)")
 
-def run_async_voice(text, output_file, voice_model):
-    async def generate_voice():
-        communicate = edge_tts.Communicate(text, voice_model)
-        await communicate.save(output_file)
-    
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            import nest_asyncio
-            nest_asyncio.apply()
-            loop.run_until_complete(generate_voice())
-        else:
-            asyncio.run(generate_voice())
-    except RuntimeError:
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        new_loop.run_until_complete(generate_voice())
-
 if st.button("🚀 ভিডিও তৈরি করুন (Create Video)"):
     if not story_input or not prompt_input:
         st.warning("দয়া করে গল্প এবং ছবির প্রম্পট উভয়ই লিখুন!")
@@ -75,7 +57,8 @@ if st.button("🚀 ভিডিও তৈরি করুন (Create Video)"):
             img.save(img_path)
             
             audio_path = "temp_voice.mp3"
-            run_async_voice(story_input, audio_path, selected_voice)
+            cmd = ["edge-tts", "--voice", selected_voice, "--text", story_input, "--write-media", audio_path]
+            subprocess.run(cmd, check=True)
             
             audio_clip = AudioFileClip(audio_path)
             video_clip = ImageClip(img_path).set_duration(audio_clip.duration)
