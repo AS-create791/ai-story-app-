@@ -2,12 +2,9 @@ import streamlit as st
 import io
 import requests
 import asyncio
-import nest_asyncio
 from PIL import Image, ImageFilter
 from moviepy.editor import ImageClip, AudioFileClip
 import edge_tts
-
-nest_asyncio.apply()
 
 st.set_page_config(page_title="AI Story Video Engine", page_icon="🎬", layout="centered")
 
@@ -36,9 +33,23 @@ prompt_input = st.text_area("৪. ছবির বিবরণ (English Visual P
 
 is_sensitive = st.checkbox("⚠️ ১৮+ / সেনসিটিভ কন্টেন্ট (Auto Privacy Blur)")
 
-async def generate_voice(text, output_file, voice_model):
-    communicate = edge_tts.Communicate(text, voice_model)
-    await communicate.save(output_file)
+def run_async_voice(text, output_file, voice_model):
+    async def generate_voice():
+        communicate = edge_tts.Communicate(text, voice_model)
+        await communicate.save(output_file)
+    
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            import nest_asyncio
+            nest_asyncio.apply()
+            loop.run_until_complete(generate_voice())
+        else:
+            asyncio.run(generate_voice())
+    except RuntimeError:
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        new_loop.run_until_complete(generate_voice())
 
 if st.button("🚀 ভিডিও তৈরি করুন (Create Video)"):
     if not story_input or not prompt_input:
@@ -64,14 +75,14 @@ if st.button("🚀 ভিডিও তৈরি করুন (Create Video)"):
             img.save(img_path)
             
             audio_path = "temp_voice.mp3"
-            asyncio.run(generate_voice(story_input, audio_path, selected_voice))
+            run_async_voice(story_input, audio_path, selected_voice)
             
             audio_clip = AudioFileClip(audio_path)
             video_clip = ImageClip(img_path).set_duration(audio_clip.duration)
             video_clip = video_clip.set_audio(audio_clip)
             
             output_video_path = "story_video.mp4"
-            video_clip.write_videofile(output_video_path, fps=24, codec="libx264")
+            video_clip.write_videofile(output_video_path, fps=24, codec="libx264", audio_codec="aac")
             
             st.success("🎉 আপনার ভিডিও সফলভাবে তৈরি হয়েছে!")
             st.video(output_video_path)
@@ -83,3 +94,4 @@ if st.button("🚀 ভিডিও তৈরি করুন (Create Video)"):
                     file_name="ai_story_video.mp4",
                     mime="video/mp4"
                 )
+                
