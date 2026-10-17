@@ -1,4 +1,4 @@
-    import streamlit as st
+import streamlit as st
 import io
 import time
 import requests
