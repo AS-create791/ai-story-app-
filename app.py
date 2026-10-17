@@ -8,8 +8,8 @@ from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
 
 st.set_page_config(page_title="Ultra AI Story Video Creator", page_icon="🎬", layout="centered")
 
-st.title("🎬 Ultra AI Story Video Creator (Modern Chinese Anime)")
-st.write("ক্রিস্টাল ক্লিয়ার ভাইব্রেন্ট ছবি এবং স্টাইলিশ মডার্ন চাইনিজ এনিমে আর্ট ভিডিও জেনারেটর!")
+st.title("🎬 Ultra AI Story Video Creator (Crystal Clear & Pro)")
+st.write("ক্রিস্টাল ক্লিয়ার, ওয়াটারমার্ক মুক্ত এবং হাই-কোয়ালিটি চাইনিজ এনিমে ভিডিও জেনারেটর!")
 
 lang_option = st.selectbox(
     "১. ভয়েসের ভাষা নির্বাচন করুন:",
@@ -32,20 +32,18 @@ story_input_multi = st.text_area(
     height=200
 )
 
-st.subheader("৩. ছবির বিবরণ (ঐচ্ছিক — ফাঁকা রাখলে এআই নিজে থেকেই ডায়লগ অনুযায়ী মডার্ন এনিমে প্রম্পট বানাবে):")
+st.subheader("৩. ছবির বিবরণ (ঐচ্ছিক — ফাঁকা রাখলে এআই নিজে থেকেই নিখুঁত প্রম্পট বানিয়ে নেবে):")
 prompt_input_multi = st.text_area(
     "Visual Prompts (যদি নিজে না লিখতে চান, তবে এটি ফাঁকা রাখুন):",
     "",
     height=150,
-    placeholder="ফাঁকা রাখলে ডায়লগ ও পোশাকের বিবরণ অনুযায়ী এআই অটোমেটিক মডার্ন চাইনিজ এনিমে প্রম্পট বানিয়ে নেবে।"
+    placeholder="ফাঁকা রাখলে ডায়লগ অনুযায়ী এআই অটোমেটিক ক্রিস্টাল ক্লিয়ার এনিমে প্রম্পট তৈরি করে নেবে।"
 )
 
-# মডার্ন চাইনিজ এনিমে প্রম্পট জেনারেটর
 def generate_anime_prompt(text):
     system_prompt = (
-        f"Convert this story scene into a vivid, colorful 1-sentence English image prompt for AI generation. "
-        f"Include details of character, outfits (modern casual jeans/jackets if unspecified, or historical if text explicitly specifies historical era), "
-        f"beautiful detailed background, bright vibrant lighting. Text: '{text}'"
+        f"Convert this story scene into an ultra-detailed, crystal-clear 1-sentence English image prompt. "
+        f"Include sharp character features, modern casual outfits (jeans/jackets), beautiful detailed background, vibrant colors. Text: '{text}'"
     )
     url = f"https://text.pollinations.ai/{requests.utils.quote(system_prompt)}?model=openai"
     try:
@@ -54,7 +52,7 @@ def generate_anime_prompt(text):
             return res.text.strip()
     except Exception:
         pass
-    return f"Vibrant atmospheric modern anime scene illustrating: {text}"
+    return f"Vibrant modern anime cinematic scene illustrating: {text}"
 
 if st.button("🚀 পুরো ভিডিও তৈরি করুন (Create Video)"):
     dialogues = [line.strip() for line in story_input_multi.strip().split('\n') if line.strip()]
@@ -73,10 +71,10 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
         
         total_scenes = len(dialogues)
         
-        # ফিক্সড মডার্ন চাইনিজ এনিমে স্টাইল ও শার্পনেস প্রম্পট
-        fixed_anime_style = (
-            "modern chinese anime style, donghua art style, extremely sharp focus, crisp crystal clear details, "
-            "vibrant beautiful rich colors, bright dramatic lighting, highly aesthetic background, 8k resolution, masterpiece"
+        # ক্রিস্টাল ক্লিয়ার এবং শার্প রেন্ডারিং স্টাইল
+        ultra_clear_style = (
+            "modern chinese anime donghua style, hyper-realistic lighting, ultra-sharp focus, crisp crystal clear details, "
+            "vibrant rich colors, flawless facial features, high-end digital art masterpiece, 8k resolution"
         )
         
         for i in range(total_scenes):
@@ -88,8 +86,10 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
             else:
                 curr_prompt = generate_anime_prompt(curr_dialogue)
             
-            full_prompt = f"{curr_prompt}, {fixed_anime_style}"
-            image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(full_prompt)}?width=1280&height=720&nologo=true&seed={i+5050}&enhance=true&model=flux"
+            full_prompt = f"{curr_prompt}, {ultra_clear_style}"
+            
+            # ওয়াটারমার্ক ও সাইজ ফিক্সড লিংক
+            image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(full_prompt)}?width=1280&height=720&nologo=true&private=true&seed={i+7777}&model=flux"
             
             success = False
             img = None
@@ -126,7 +126,7 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
         output_video_path = "final_story_video.mp4"
         final_video.write_videofile(output_video_path, fps=24, codec="libx264", audio_codec="aac")
         
-        st.success("🎉 আপনার ক্রিস্টাল ক্লিয়ার মডার্ন এনিমে ভিডিও প্রস্তুত!")
+        st.success("🎉 আপনার ক্রিস্টাল ক্লিয়ার ও প্রো-লেভেল ভিডিও প্রস্তুত!")
         st.video(output_video_path)
         
         with open(output_video_path, "rb") as file:
