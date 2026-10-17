@@ -1,4 +1,4 @@
-import streamlit as st
+    import streamlit as st
 import io
 import time
 import requests
@@ -8,8 +8,8 @@ from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
 
 st.set_page_config(page_title="Ultra AI Story Video Creator", page_icon="🎬", layout="centered")
 
-st.title("🎬 Ultra AI Story Video Creator (Smart Theme)")
-st.write("ক্রিস্টাল ক্লিয়ার ছবি এবং গল্প অনুযায়ী অটোমেটিক ডার্ক/লাইট থিম এআই ভিডিও জেনারেটর!")
+st.title("🎬 Ultra AI Story Video Creator (Modern Chinese Anime)")
+st.write("ক্রিস্টাল ক্লিয়ার ভাইব্রেন্ট ছবি এবং স্টাইলিশ মডার্ন চাইনিজ এনিমে আর্ট ভিডিও জেনারেটর!")
 
 lang_option = st.selectbox(
     "১. ভয়েসের ভাষা নির্বাচন করুন:",
@@ -23,7 +23,7 @@ voice_mapping = {
 }
 selected_voice = voice_mapping[lang_option]
 
-st.subheader("৩. দৃশ্যসমূহ লিখুন (প্রতি লাইনে ১টি বাক্য বা ডায়লগ — সর্বোচ্চ ৫০টি):")
+st.subheader("২. দৃশ্যসমূহ লিখুন (প্রতি লাইনে ১টি বাক্য বা ডায়লগ — সর্বোচ্চ ৫০টি):")
 story_input_multi = st.text_area(
     "গল্পের ডায়লগ (প্রতি লাইনে ১টি লিখুন):",
     "বাইরে তখন গুঁড়ি গুঁড়ি বৃষ্টি পড়ছিল, পুরো শহর জুড়ে আলো-আঁধারির খেলা।\n"
@@ -32,20 +32,20 @@ story_input_multi = st.text_area(
     height=200
 )
 
-st.subheader("৪. ছবির বিবরণ (ঐচ্ছিক — ফাঁকা রাখলে গল্প অনুযায়ী এআই নিজেই অটো প্রম্পট ও থিম সেট করবে):")
+st.subheader("৩. ছবির বিবরণ (ঐচ্ছিক — ফাঁকা রাখলে এআই নিজে থেকেই ডায়লগ অনুযায়ী মডার্ন এনিমে প্রম্পট বানাবে):")
 prompt_input_multi = st.text_area(
     "Visual Prompts (যদি নিজে না লিখতে চান, তবে এটি ফাঁকা রাখুন):",
     "",
     height=150,
-    placeholder="ফাঁকা রাখলে গল্প ও থিম (ডার্ক বা লাইট) অনুযায়ী এআই নিজে থেকেই নিখুঁত প্রম্পট তৈরি করে নেবে।"
+    placeholder="ফাঁকা রাখলে ডায়লগ ও পোশাকের বিবরণ অনুযায়ী এআই অটোমেটিক মডার্ন চাইনিজ এনিমে প্রম্পট বানিয়ে নেবে।"
 )
 
-# গল্প অনুযায়ী স্মার্ট থিম ও প্রম্পট জেনারেটর (ডার্ক বা লাইট অটো ডিটেক্ট করবে)
-def generate_smart_prompt(text):
+# মডার্ন চাইনিজ এনিমে প্রম্পট জেনারেটর
+def generate_anime_prompt(text):
     system_prompt = (
-        f"Analyze this scene text and create a crystal clear, high-detail 1-sentence English image prompt. "
-        f"Automatically adapt the lighting and mood based on the text: use dark/gothic/moody themes if the scene is sad, tense or dark; "
-        f"use bright/warm/vibrant lighting if it's normal, happy or light. Text: '{text}'"
+        f"Convert this story scene into a vivid, colorful 1-sentence English image prompt for AI generation. "
+        f"Include details of character, outfits (modern casual jeans/jackets if unspecified, or historical if text explicitly specifies historical era), "
+        f"beautiful detailed background, bright vibrant lighting. Text: '{text}'"
     )
     url = f"https://text.pollinations.ai/{requests.utils.quote(system_prompt)}?model=openai"
     try:
@@ -54,7 +54,7 @@ def generate_smart_prompt(text):
             return res.text.strip()
     except Exception:
         pass
-    return f"High quality cinematic scene illustrating: {text}"
+    return f"Vibrant atmospheric modern anime scene illustrating: {text}"
 
 if st.button("🚀 পুরো ভিডিও তৈরি করুন (Create Video)"):
     dialogues = [line.strip() for line in story_input_multi.strip().split('\n') if line.strip()]
@@ -65,7 +65,7 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
     elif len(dialogues) == 0:
         st.warning("দয়া করে অন্তত একটি দৃশ্য বা ডায়লগ ইনপুট দিন!")
     elif len(custom_prompts) > 0 and len(custom_prompts) != len(dialogues):
-        st.error(f"⚠️ ডায়লগ লাইন ({len(dialogues)}টি) এবং প্রম্পট লাইন ({len(custom_prompts)}টি) সমান হতে হবে। অথবা ৪ নম্বর ঘরটি ফাঁকা রাখুন।")
+        st.error(f"⚠️ ডায়লগ লাইন ({len(dialogues)}টি) এবং প্রম্পট লাইন ({len(custom_prompts)}টি) সমান হতে হবে। অথবা ৩ নম্বর ঘরটি ফাঁকা রাখুন।")
     else:
         video_clips = []
         progress_bar = st.progress(0)
@@ -73,18 +73,23 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
         
         total_scenes = len(dialogues)
         
+        # ফিক্সড মডার্ন চাইনিজ এনিমে স্টাইল ও শার্পনেস প্রম্পট
+        fixed_anime_style = (
+            "modern chinese anime style, donghua art style, extremely sharp focus, crisp crystal clear details, "
+            "vibrant beautiful rich colors, bright dramatic lighting, highly aesthetic background, 8k resolution, masterpiece"
+        )
+        
         for i in range(total_scenes):
-            status_text.text(f"⏳ ক্রিস্টাল ক্লিয়ার ছবি তৈরি হচ্ছে... দৃশ্য {i+1}/{total_scenes}")
+            status_text.text(f"⏳ ক্রিস্টাল ক্লিয়ার ছবি জেনারেট হচ্ছে... দৃশ্য {i+1}/{total_scenes}")
             curr_dialogue = dialogues[i]
             
             if len(custom_prompts) == len(dialogues):
                 curr_prompt = custom_prompts[i]
             else:
-                curr_prompt = generate_smart_prompt(curr_dialogue)
+                curr_prompt = generate_anime_prompt(curr_dialogue)
             
-            # ক্রিস্টাল ক্লিয়ার ও ডিটেইলড রেন্ডারিং প্যারামিটার
-            full_prompt = f"{curr_prompt}, crystal clear details, sharp focus, highly detailed digital art, 8k resolution, masterpiece"
-            image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(full_prompt)}?width=1280&height=720&nologo=true&seed={i+3030}&enhance=true"
+            full_prompt = f"{curr_prompt}, {fixed_anime_style}"
+            image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(full_prompt)}?width=1280&height=720&nologo=true&seed={i+5050}&enhance=true&model=flux"
             
             success = False
             img = None
@@ -116,12 +121,12 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
             
             progress_bar.progress((i + 1) / total_scenes)
             
-        status_text.text("🎬 সবগুলো ক্লিপ জোড়া দিয়ে ভিডিও রেন্ডার করা হচ্ছে...")
+        status_text.text("🎬 সবগুলো ক্লিপ জোড়া দিয়ে হাই-ডেফিনিশন ভিডিও রেন্ডার করা হচ্ছে...")
         final_video = concatenate_videoclips(video_clips, method="compose")
         output_video_path = "final_story_video.mp4"
         final_video.write_videofile(output_video_path, fps=24, codec="libx264", audio_codec="aac")
         
-        st.success("🎉 আপনার ক্রিস্টাল ক্লিয়ার এইচডি ভিডিও প্রস্তুত!")
+        st.success("🎉 আপনার ক্রিস্টাল ক্লিয়ার মডার্ন এনিমে ভিডিও প্রস্তুত!")
         st.video(output_video_path)
         
         with open(output_video_path, "rb") as file:
@@ -131,4 +136,3 @@ if st.button("🚀 পুরো ভিডিও তৈরি করুন (Creat
                 file_name="full_story_video.mp4",
                 mime="video/mp4"
             )
-            
