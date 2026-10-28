@@ -1,6 +1,6 @@
 streamlit
-requests
-Pillow
 moviepy
+Pillow
+numpy
+requests
 edge-tts
-nest_asyncio
